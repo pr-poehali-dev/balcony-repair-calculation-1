@@ -220,7 +220,7 @@ export default function CalculatorSection({
           <div className="border border-border p-5">
             <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">Подсказки</p>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="flex gap-2"><span>—</span>Измерьте длину и ширину вдоль плинтуса</li>
+              <li className="flex gap-2">Измерьте длину и ширину в доль периметра</li>
               <li className="flex gap-2"><span>—</span>Высота — от пола до потолка</li>
               <li className="flex gap-2"><span>—</span>Стандартная дверь: 2.0 × 0.9 м</li>
               <li className="flex gap-2"><span>—</span>Стандартное окно: 1.5 × 1.0 м</li>
