@@ -78,24 +78,7 @@ export default function CalculatorSection({
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <div className="border border-border p-6">
-            <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-5">Размеры комнаты</p>
-            <div className="grid grid-cols-3 gap-4 mb-4">
-              {([["length", "Длина, м"], ["width", "Ширина, м"], ["height", "Высота, м"]] as const).map(([key, label]) => (
-                <div key={key}>
-                  <label className="text-xs text-muted-foreground block mb-1.5">{label}</label>
-                  <input
-                    type="number" step="0.1" min="0"
-                    value={dims[key]}
-                    onChange={(e) => setDims((d) => ({ ...d, [key]: e.target.value }))}
-                    placeholder="0.0"
-                    className="w-full border border-border bg-transparent px-3 py-2.5 text-sm font-mono focus:outline-none focus:border-foreground transition-colors"
-                  />
-                </div>
-              ))}
-            </div>
 
-          </div>
 
           {dims.length && dims.width && dims.height && (
             <div className="border border-border p-6 animate-fade-in">
