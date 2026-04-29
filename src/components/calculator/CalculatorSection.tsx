@@ -94,19 +94,7 @@ export default function CalculatorSection({
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              {([["doors", "Дверей, шт."], ["windows", "Окон, шт."]] as const).map(([key, label]) => (
-                <div key={key}>
-                  <label className="text-xs text-muted-foreground block mb-1.5">{label}</label>
-                  <input
-                    type="number" min="0"
-                    value={dims[key]}
-                    onChange={(e) => setDims((d) => ({ ...d, [key]: e.target.value }))}
-                    className="w-full border border-border bg-transparent px-3 py-2.5 text-sm font-mono focus:outline-none focus:border-foreground transition-colors"
-                  />
-                </div>
-              ))}
-            </div>
+
           </div>
 
           {dims.length && dims.width && dims.height && (
