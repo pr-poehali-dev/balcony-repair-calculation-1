@@ -169,12 +169,7 @@ export default function Index() {
       {/* HEADER */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-b border-border">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
-          <button onClick={() => setSection("home")} className="font-semibold text-sm tracking-tight flex items-center gap-2">
-            <span className="w-6 h-6 bg-foreground rounded-sm flex items-center justify-center">
-              <span className="text-background text-xs font-bold">К</span>
-            </span>
-            Калькулятор отделки
-          </button>
+          <button className="font-semibold tracking-tight flex items-center gap-2 text-3xl" onClick={() => setSection("home")} className="font-semibold text-sm tracking-tight flex items-center gap-2">Калькулятор балкона - лоджии</button>
           <nav className="hidden md:flex items-center gap-6">
             {navItems.map((item) => (
               <button
