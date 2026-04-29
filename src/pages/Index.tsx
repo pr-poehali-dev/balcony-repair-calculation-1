@@ -209,9 +209,7 @@ export default function Index() {
                   <h1 className="text-5xl font-bold leading-tight tracking-tight mb-6">
                     Точная смета<br />за 30 секунд
                   </h1>
-                  <p className="text-muted-foreground text-lg leading-relaxed mb-8">
-                    Введите размеры комнаты — получите полный список материалов с ценами, сравнение вариантов и готовую смету.
-                  </p>
+                  <p className="text-muted-foreground text-lg leading-relaxed mb-8">Введите размеры балкона, лоджии — получите полный список материалов с ценами, сравнение вариантов и готовую смету.</p>
                   <div className="flex gap-3">
                     <button
                       onClick={() => setSection("calculator")}
