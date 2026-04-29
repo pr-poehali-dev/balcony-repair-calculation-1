@@ -44,6 +44,19 @@ interface ChatMessage {
   time: string;
 }
 
+interface Measurements {
+  room_width: string;
+  room_length_left: string;
+  room_length_right: string;
+  height_to_sill: string;
+  height_sill_to_top: string;
+  client_name: string;
+  client_phone: string;
+  comment: string;
+}
+
+const SAVE_MEASUREMENTS_URL = "https://functions.poehali.dev/bb4233a4-cd8e-48b4-a5b1-a11d3acad3d0";
+
 const VARIANTS: Variant[] = [
   {
     id: "economy",
@@ -120,6 +133,15 @@ export default function Index() {
   const [compareMode, setCompareMode] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  const [measurements, setMeasurements] = useState<Measurements>({
+    room_width: "", room_length_left: "", room_length_right: "",
+    height_to_sill: "", height_sill_to_top: "",
+    client_name: "", client_phone: "", comment: "",
+  });
+  const [measureSaving, setMeasureSaving] = useState(false);
+  const [measureSaved, setMeasureSaved] = useState(false);
+  const [measureError, setMeasureError] = useState("");
+
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
   const variant = VARIANTS.find((v) => v.id === selectedVariant)!;
@@ -155,6 +177,42 @@ export default function Index() {
     const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
     const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: "smeta.txt" });
     a.click();
+  };
+
+  const handleSaveMeasurements = async () => {
+    const { room_width, room_length_left, room_length_right, height_to_sill, height_sill_to_top } = measurements;
+    if (!room_width || !room_length_left || !room_length_right || !height_to_sill || !height_sill_to_top) {
+      setMeasureError("Заполните все поля замеров");
+      return;
+    }
+    setMeasureSaving(true);
+    setMeasureError("");
+    try {
+      const res = await fetch(SAVE_MEASUREMENTS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          room_width: parseFloat(room_width),
+          room_length_left: parseFloat(room_length_left),
+          room_length_right: parseFloat(room_length_right),
+          height_to_sill: parseFloat(height_to_sill),
+          height_sill_to_top: parseFloat(height_sill_to_top),
+          client_name: measurements.client_name,
+          client_phone: measurements.client_phone,
+          comment: measurements.comment,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMeasureSaved(true);
+      } else {
+        setMeasureError(data.error || "Ошибка сохранения");
+      }
+    } catch {
+      setMeasureError("Ошибка соединения с сервером");
+    } finally {
+      setMeasureSaving(false);
+    }
   };
 
   const navItems: { id: Section; label: string }[] = [
@@ -361,6 +419,79 @@ export default function Index() {
                 >
                   Рассчитать смету →
                 </button>
+
+                {/* Форма детальных замеров */}
+                <div className="border border-border p-6">
+                  <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-1">Замеры окна</p>
+                  <p className="text-xs text-muted-foreground mb-5">Сохраним точные замеры для мастера</p>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    {([
+                      ["room_width", "Ширина помещения, м"],
+                      ["room_length_left", "Длина (левая сторона), м"],
+                      ["room_length_right", "Длина (правая сторона), м"],
+                      ["height_to_sill", "Высота до подоконника, м"],
+                      ["height_sill_to_top", "Высота от подоконника до края окна, м"],
+                    ] as const).map(([key, label]) => (
+                      <div key={key} className={key === "height_sill_to_top" ? "col-span-2" : ""}>
+                        <label className="text-xs text-muted-foreground block mb-1.5">{label}</label>
+                        <input
+                          type="number" step="0.01" min="0"
+                          value={measurements[key]}
+                          onChange={(e) => { setMeasureSaved(false); setMeasurements((m) => ({ ...m, [key]: e.target.value })); }}
+                          placeholder="0.00"
+                          className="w-full border border-border bg-transparent px-3 py-2.5 text-sm font-mono focus:outline-none focus:border-foreground transition-colors"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1.5">Имя клиента</label>
+                      <input
+                        type="text"
+                        value={measurements.client_name}
+                        onChange={(e) => setMeasurements((m) => ({ ...m, client_name: e.target.value }))}
+                        placeholder="Иван Иванов"
+                        className="w-full border border-border bg-transparent px-3 py-2.5 text-sm focus:outline-none focus:border-foreground transition-colors"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1.5">Телефон</label>
+                      <input
+                        type="tel"
+                        value={measurements.client_phone}
+                        onChange={(e) => setMeasurements((m) => ({ ...m, client_phone: e.target.value }))}
+                        placeholder="+7 (999) 999-99-99"
+                        className="w-full border border-border bg-transparent px-3 py-2.5 text-sm focus:outline-none focus:border-foreground transition-colors"
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <label className="text-xs text-muted-foreground block mb-1.5">Примечания</label>
+                    <textarea
+                      rows={2}
+                      value={measurements.comment}
+                      onChange={(e) => setMeasurements((m) => ({ ...m, comment: e.target.value }))}
+                      placeholder="Особенности, пожелания..."
+                      className="w-full border border-border bg-transparent px-3 py-2.5 text-sm focus:outline-none focus:border-foreground transition-colors resize-none"
+                    />
+                  </div>
+                  {measureError && <p className="text-xs text-red-500 mb-3">{measureError}</p>}
+                  {measureSaved ? (
+                    <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 px-4 py-3">
+                      <Icon name="CheckCircle" size={16} />
+                      Замеры сохранены! Мастер получит их перед выездом.
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleSaveMeasurements}
+                      disabled={measureSaving}
+                      className="w-full border border-foreground text-foreground py-3 text-sm font-medium hover:bg-foreground hover:text-background transition-colors disabled:opacity-40"
+                    >
+                      {measureSaving ? "Сохранение..." : "Сохранить замеры →"}
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-4">

@@ -1,0 +1,22 @@
+{
+  "tests": [
+    {
+      "name": "Сохранение замеров",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "room_width": 2.5,
+        "room_length_left": 6.0,
+        "room_length_right": 6.1,
+        "height_to_sill": 0.9,
+        "height_sill_to_top": 1.4,
+        "client_name": "Тест",
+        "client_phone": "+79001234567",
+        "comment": "Тестовый замер"
+      },
+      "expectedStatus": 200,
+      "expectedBody": { "success": true },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
